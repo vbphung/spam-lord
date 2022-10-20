@@ -1,9 +1,9 @@
 import re
 
-standard = r"((?:[a-zA-Z]|\.){2,})"
+standard = r"((?:[a-zA-Z]|-|\.){2,})"
 username = standard
 
-domain = r"((?:[a-zA-Z]|\.)+\w+)"
+domain = r"((?:[a-zA-Z]|-|\.)+\w+)"
 dot_domain = r"(?: dot | dt |\.|\;)" + domain
 
 extension = r"((?:[a-zA-Z]|\.)+(?:\w|\;)+)"
@@ -39,7 +39,7 @@ email_patterns = [
 phone_format = "{0}-{1}-{2}"
 
 phone_patterns = [
-    re.compile(r"(\d{3})(?:-|&thinsp;|s+)(\d{3})(?:-|&thinsp;|s+)(\d{4})"),
+    re.compile(r"(\d{3})(?:-|&thinsp;|\s+)(\d{3})(?:-|&thinsp;|\s+)(\d{4})"),
     re.compile(r"\((\d{3})\)\s*(\d{3})(?:-|s+)(\d{4})"),
 ]
 
@@ -56,7 +56,22 @@ def extract_emails(fileName, line):
     for (pat, fmt) in email_patterns:
         matches = re.findall(pat, line)
         for m in matches:
-            emails.append((fileName, "e", fmt.format(*m)))
+            if m[0] == "Server" or m[0] == "server":
+                continue
+
+            if len(m) == 2:
+                if fmt == "{1}@{0}":
+                    if "." not in m[0]:
+                        continue
+                elif "." not in m[1]:
+                    continue
+
+            if True in [(";" in w) for w in m]:
+                continue
+
+            email = fmt.format(*m).replace("-", "")
+
+            emails.append((fileName, "e", email))
 
     return emails
 
