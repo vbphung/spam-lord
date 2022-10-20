@@ -42,3 +42,30 @@ phone_patterns = [
     re.compile(r"(\d{3})(?:-|&thinsp;|s+)(\d{3})(?:-|&thinsp;|s+)(\d{4})"),
     re.compile(r"\((\d{3})\)\s*(\d{3})(?:-|s+)(\d{4})"),
 ]
+
+
+def extract(fileName, line):
+    emails = extract_emails(fileName, line)
+    phones = extract_phones(fileName, line)
+
+    return emails + phones
+
+
+def extract_emails(fileName, line):
+    emails = []
+    for (pat, fmt) in email_patterns:
+        matches = re.findall(pat, line)
+        for m in matches:
+            emails.append((fileName, "e", fmt.format(*m)))
+
+    return emails
+
+
+def extract_phones(fileName, line):
+    phones = []
+    for pat in phone_patterns:
+        matches = re.findall(pat, line)
+        for m in matches:
+            phones.append(fileName, "p", phone_format.format(*m))
+
+    return phones
