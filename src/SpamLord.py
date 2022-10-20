@@ -3,6 +3,8 @@ import os
 import re
 import pprint
 
+from regex import extract
+
 my_first_pat = "(\w+)@(\w+).edu"
 
 """ 
@@ -33,10 +35,8 @@ def process_file(name, f):
     # sys.stderr.write('[process_file]\tprocessing file: %s\n' % (path))
     res = []
     for line in f:
-        matches = re.findall(my_first_pat, line)
-        for m in matches:
-            email = "%s@%s.edu" % m
-            res.append((name, "e", email))
+        res = res + extract(name, line)
+
     return res
 
 

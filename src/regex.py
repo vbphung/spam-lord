@@ -66,6 +66,6 @@ def extract_phones(fileName, line):
     for pat in phone_patterns:
         matches = re.findall(pat, line)
         for m in matches:
-            phones.append(fileName, "p", phone_format.format(*m))
+            phones.append((fileName, "p", phone_format.format(*m)))
 
     return phones
